@@ -9,7 +9,12 @@ lazy val copypaster = (project in file("copypaster")
       "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.3-1"
     )
   )
-) 
+)
+
+lazy val plainScala = (project in file("plain-scala")
+  settings(commonSettings)
+  dependsOn(model)
+)
 
 lazy val scalaz = (project in file("scalaz")
   settings(commonSettings)
