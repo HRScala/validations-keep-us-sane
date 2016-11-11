@@ -1,20 +1,23 @@
 package hrscala.validation
 
 import Models.{Row, ScalaDeveloper}
+import scala.util.Try
+import cats.Apply
+import cats.data.ValidatedNel
+import cats.data.Validated.{invalidNel, valid}
+
 
 object CatsValidation
     extends App
     with CommonCatsValidations
     with BusinessCatsValidations {
 
-  def constructScalaDeveloper(row: Row): ValidationNel[String, ScalaDeveloper] = {
-    val name      = nonEmptyString(row.cells(0))
-    val age       = positiveNumber(row.cells(1)) flatMap noMinor
-    val languages = commaSeparatedStrings(row.cells(2)) flatMap mustHaveScala
-
-    (name |@| age |@| languages) {
-      ScalaDeveloper(_, _, _)
-    }
+  def constructScalaDeveloper(row: Row): ValidatedNel[String, ScalaDeveloper] = {
+    Apply[ValidatedNel[String, ?]].map3(
+      nonEmptyString(row.cells(0)),
+      positiveNumber(row.cells(1)) andThen noMinor,
+      commaSeparatedStrings(row.cells(2)) andThen mustHaveScala
+    )(ScalaDeveloper(_, _, _))
   }
 
   Models.people foreach { row =>
@@ -23,79 +26,32 @@ object CatsValidation
 }
 
 trait CommonCatsValidations {
-  def nonEmptyString(input: String): ValidationNel[String, String] =
-    if (input != null && input.nonEmpty) input.successNel else "Input string is empty".failureNel
+  def nonEmptyString(input: String): ValidatedNel[String, String] =
+    if (input != null && input.nonEmpty) valid(input) else invalidNel("Input string is empty")
 
-  def number(input: String): ValidationNel[String, Int] =
-    nonEmptyString(input).flatMap { nes =>
-      Try(input.toInt.successNel[String]).getOrElse(s"Invalid number format for input: $input".failureNel)
+  def number(input: String): ValidatedNel[String, Int] =
+    nonEmptyString(input) andThen { nes =>
+      Try(valid(input.toInt)).getOrElse(invalidNel(s"Invalid number format for input: $input"))
     }
 
-  def positiveNumber(input: String): ValidationNel[String, Int] =
-    number(input).flatMap { num =>
-      if(num > 0L) num.successNel else "The input value is not positive".failureNel
+  def positiveNumber(input: String): ValidatedNel[String, Int] =
+    number(input) andThen { num =>
+      if(num > 0L) valid(num) else invalidNel("The input value is not positive")
     }
 
-  def commaSeparatedStrings(input: String): ValidationNel[String, Seq[String]] =
-    nonEmptyString(input).flatMap { nes =>
-      nes.split(", *").toSeq.successNel
+  def commaSeparatedStrings(input: String): ValidatedNel[String, Seq[String]] =
+    nonEmptyString(input) andThen  { nes =>
+      valid(nes.split(", *").toSeq)
     }
 }
 
 trait BusinessCatsValidations {
-  def noMinor(age: Int): ValidationNel[String, Int] =
-    if (age < 18) "Person is a minor".failureNel else age.successNel
+  def noMinor(age: Int): ValidatedNel[String, Int] =
+    if (age < 18) invalidNel("Person is a minor") else valid(age)
 
-  def mustHaveScala(languages: Seq[String]): ValidationNel[String, Seq[String]] =
+  def mustHaveScala(languages: Seq[String]): ValidatedNel[String, Seq[String]] =
     languages.find(_ == "scala") match {
-      case _: Some[String] => languages.successNel
-      case _ => "Languages did not contain Scala".failureNel
+      case _: Some[String] => valid(languages)
+      case _ => invalidNel("Languages did not contain Scala")
     }
 }
-
-
-/*
-import cats.Apply
-import cats.data.ValidatedNel
-import cats.data.Validated.{Invalid, Valid}
-import cats.data.Validated.{invalidNel, valid}
-
-import scala.util.Try
-
-object CatsValidated extends App with CommonCatsValidations {
-  MigrationInput.clientSheet
-    .map(constructKiller)
-    .foreach(println)
-
-  def constructKiller(row: Excel.Row): ValidatedNel[String, Instafin.Killer] = {
-    Apply[ValidatedNel[String, ?]].map3(
-      nonEmptyString(row.cells(0).value),
-      number(row.cells(1).value),
-      optionalPositiveNumber(row.cells(2).value)
-    )(Instafin.Killer(_, _, _))
-  }
-}
-
-trait CommonCatsValidations {
-
-  def nonEmptyString(input: String): ValidatedNel[String, String] = {
-    if(input != null && input.nonEmpty) valid(input) else invalidNel("Input string is empty")
-  }
-
-  def number(input: String): ValidatedNel[String, Long] = {
-    Try(valid(input.toLong)).getOrElse(invalidNel(s"invalid number format for input [$input]"))
-  }
-
-  def positiveNumber(value: Long): ValidatedNel[String, Long] = {
-    if(value > 0) valid(value) else invalidNel("the input value is not positive")
-  }
-
-  def optionalPositiveNumber(input: String): ValidatedNel[String, Option[Long]] = {
-    if(input == null || input.isEmpty) valid(None) else {
-      number(input).andThen(positiveNumber).map(Some(_))
-    }
-  }
-}
-
-
-*/
