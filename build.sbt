@@ -24,11 +24,23 @@ lazy val cats = (project in file("cats")
   settings(commonSettings)
   settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats" % "0.7.0"
+      "org.typelevel" %% "cats" % "0.8.1"
     ),
-    addCompilerPlugin("org.spire-math" % "kind-projector" % "0.8.0" cross CrossVersion.binary)
+    addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.3" cross CrossVersion.binary)
   )
 ) dependsOn(model)
+
+lazy val scalactic = (project in file("scalactic")
+  settings(commonSettings)
+  settings(
+    libraryDependencies ++= Seq(
+      "org.scalactic" %% "scalactic" % "3.0.0"
+    )
+  )
+) dependsOn(model)
+
+
+
 
 lazy val commonSettings = Defaults.coreDefaultSettings ++ Seq(
   organization := "org.hrscala",
@@ -69,7 +81,7 @@ lazy val commonSettings = Defaults.coreDefaultSettings ++ Seq(
       "-Yinline-warnings:false"
     )
     case _ => Seq(
-      "-Yopt:_"
+      "-opt:_"
     )
   }),
 
