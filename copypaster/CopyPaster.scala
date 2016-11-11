@@ -21,7 +21,8 @@ object CopyPaster extends App {
   val validators = Map(
     "scalaz" -> "ScalazValidation.scala",
     "cats" -> "CatsValidation.scala",
-    "scalactic" -> "ScalacticValidation.scala"
+    "scalactic" -> "ScalacticValidation.scala",
+    "plain-scala" -> "PlainScalaValidaton.scala"
   )
 
   for ((validator, filename) <- validators) {

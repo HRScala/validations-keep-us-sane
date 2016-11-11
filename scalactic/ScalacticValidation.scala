@@ -17,7 +17,7 @@ object ScalacticValidation
 
     withGood(name, age, languages) {
       ScalaDeveloper(_, _, _)
-    }
+    } when(notTooOld)
   }
 
   Models.people foreach { row =>
@@ -52,4 +52,7 @@ trait BusinessScalacticValidations {
 
   def mustHaveScala(languages: Seq[String]): Validation[ErrorMessage] =
     if(languages.find(_ == "scala").isDefined) Pass else Fail("Languages did not contain Scala")
+
+  def notTooOld(scalaDeveloper: ScalaDeveloper): Validation[ErrorMessage] =
+    if(scalaDeveloper.age < 60) Pass else Fail("Dude, you are too old.")
 }

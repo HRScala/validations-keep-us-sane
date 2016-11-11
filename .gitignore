@@ -3,3 +3,4 @@ target
 scalaz/src
 cats/src
 scalactic/src
+plain-scala/src

@@ -57,4 +57,6 @@ trait BusinessScalazValidations {
       case _: Some[String] => languages.successNel
       case _ => "Languages did not contain Scala".failureNel
     }
+
+
 }
