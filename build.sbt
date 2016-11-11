@@ -11,6 +11,11 @@ lazy val copypaster = (project in file("copypaster")
   )
 )
 
+lazy val plainScala = (project in file("plain-scala")
+  settings(commonSettings)
+  dependsOn(model)
+)
+
 lazy val scalaz = (project in file("scalaz")
   settings(commonSettings)
   settings(
