@@ -1,3 +1,5 @@
+package hrscala.validation
+
 import Models.{Row, ScalaDeveloper}
 
 import scala.util.Try

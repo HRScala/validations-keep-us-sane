@@ -1,3 +1,5 @@
+package hrscala.validation
+
 import Models.{Row, ScalaDeveloper}
 
 object CatsValidation

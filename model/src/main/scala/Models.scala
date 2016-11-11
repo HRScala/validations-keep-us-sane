@@ -1,3 +1,5 @@
+package hrscala.validation
+
 object Models {
 
   // INPUT
