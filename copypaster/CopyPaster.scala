@@ -1,9 +1,15 @@
 package hrscala.validation
 
 import scalax.file.Path
+import scala.util.Try
 
 object CopyPaster extends App {
-  val copyCount = args(0).toInt
+  val copyCount = Try {
+    args(0).toInt
+  } getOrElse {
+    println("Using default 100 for copy/pasting")
+    100
+  }
 
   val root = {
     val classLocation = getClass.getProtectionDomain.getCodeSource.getLocation.getPath
