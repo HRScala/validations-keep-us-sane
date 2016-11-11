@@ -23,12 +23,10 @@ object ScalacticValidation
   Models.people foreach { row =>
     println(constructScalaDeveloper(row))
   }
-
 }
 
 
 trait CommonScalacticValidations {
-
   def nonEmptyString(input: String): String Or One[ErrorMessage] =
     if (input != null && input.nonEmpty) Good(input) else Bad(One("Input string is empty"))
 
@@ -49,7 +47,6 @@ trait CommonScalacticValidations {
 }
 
 trait BusinessScalacticValidations {
-
   def noMinor(age: Int): Validation[ErrorMessage] =
     if (age < 18) Fail("Person is a minor") else Pass
 

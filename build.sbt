@@ -9,7 +9,7 @@ lazy val copypaster = (project in file("copypaster")
       "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.3-1"
     )
   )
-) 
+)
 
 lazy val scalaz = (project in file("scalaz")
   settings(commonSettings)
@@ -19,6 +19,11 @@ lazy val scalaz = (project in file("scalaz")
     )
   )
 ) dependsOn(model)
+
+lazy val scalazBench = (project in file("scalaz-bench")
+  settings(commonSettings)
+  enablePlugins(JmhPlugin)
+) dependsOn(scalaz)
 
 lazy val cats = (project in file("cats")
   settings(commonSettings)
@@ -30,6 +35,11 @@ lazy val cats = (project in file("cats")
   )
 ) dependsOn(model)
 
+lazy val catsBench = (project in file("cats-bench")
+  settings(commonSettings)
+  enablePlugins(JmhPlugin)
+) dependsOn(cats)
+
 lazy val scalactic = (project in file("scalactic")
   settings(commonSettings)
   settings(
@@ -39,8 +49,10 @@ lazy val scalactic = (project in file("scalactic")
   )
 ) dependsOn(model)
 
-
-
+lazy val scalacticBench = (project in file("scalactic-bench")
+  settings(commonSettings)
+  enablePlugins(JmhPlugin)
+) dependsOn(scalactic)
 
 lazy val commonSettings = Defaults.coreDefaultSettings ++ Seq(
   organization := "org.hrscala",

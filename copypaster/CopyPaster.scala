@@ -36,4 +36,3 @@ object CopyPaster extends App {
     }
   }
 }
-
