@@ -1,9 +1,17 @@
 package hrscala.validation
 
-import scalax.file._
+import scalax.file.Path
 
 object CopyPaster extends App {
   val copyCount = args(0).toInt
+
+  val root = {
+    val classLocation = getClass.getProtectionDomain.getCodeSource.getLocation.getPath
+    val isWindoze = sys.props("file.separator") == "\\"
+    val path = if (isWindoze) classLocation.tail else classLocation
+    Path(path.replaceFirst("/copypaster.*", ""), '/')
+  }
+
   val validators = Map(
     "scalaz" -> "ScalazValidation.scala",
     "cats" -> "CatsValidation.scala",
@@ -11,17 +19,15 @@ object CopyPaster extends App {
   )
 
   for ((validator, filename) <- validators) {
-    val root = Path("""/home/ivantopo/projects/hrscala/validations-keep-us-sane/""" + validator, '/')
-
-    val source = root / filename
-    val body = source.string
-
+    // cleanup
     (root / "src").deleteRecursively(force = true, continueOnFailure = false)
 
-    for (i <- 1 to copyCount) {
+    val body = (root / validator / filename).string
+    for (i <- 1 until copyCount) {
       val bodyWithInjectedPackage = body.replaceFirst("(package hrscala.validation)", s"$$1\npackage copypasted$i")
-      val target = root / "src" / "main" / "scala" / "hrscala" / "validation" / s"copypasted$i" / source.name
+      val target = root / validator / "src" / "main" / "scala" / "hrscala" / "validation" / s"copypasted$i" / filename
       target write bodyWithInjectedPackage
     }
   }
 }
+
