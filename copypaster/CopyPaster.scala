@@ -3,6 +3,7 @@ package hrscala.validation
 import scalax.file._
 
 object CopyPaster extends App {
+  val copyCount = args(0).toInt
   val validators = Map(
     "scalaz" -> "ScalazValidation.scala",
     "cats" -> "CatsValidation.scala",
@@ -17,7 +18,7 @@ object CopyPaster extends App {
 
     (root / "src").deleteRecursively(force = true, continueOnFailure = false)
 
-    for (i <- 1 to 500) {
+    for (i <- 1 to copyCount) {
       val bodyWithInjectedPackage = body.replaceFirst("(package hrscala.validation)", s"$$1\npackage copypasted$i")
       val target = root / "src" / "main" / "scala" / "hrscala" / "validation" / s"copypasted$i" / source.name
       target write bodyWithInjectedPackage
